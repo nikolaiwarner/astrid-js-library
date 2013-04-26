@@ -114,7 +114,10 @@ class root.Astrid
         if request.responseText == ""
           callback { status: "failure", message: "Empty response received from server." }
         else
-          json = Astrid.json_parse request.responseText
+          # Set 64-bit integer task IDs to strings
+          numbers = /("[^"]*":\s*)(\d{15,})([,}])/g
+          responseText = request.responseText.replace numbers, "$1\"$2\"$3"
+          json = Astrid.json_parse responseText
           callback json
     request.open "POST", url, true
     request.setRequestHeader "Content-type", "application/x-www-form-urlencoded"
